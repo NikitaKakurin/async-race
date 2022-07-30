@@ -1,0 +1,55 @@
+.car{
+  border-bottom: 2px double #fff;
+  .wrapper-image{
+    height: 50px;
+    align-items: top;
+    justify-content: flex-start;
+    column-gap: 10px;
+    position: relative;
+  }
+
+
+  &__model{
+    margin: 0;
+  }
+
+  &__btn-start,
+  &__btn-stop{
+    height: 25px;
+    background-color: transparent;
+    border: 1px solid rgb(234, 133, 18);
+    border-radius: 5px;
+    color: rgb(173, 95, 17);
+    transition: color .5s;
+    cursor: pointer;
+
+    &:hover{
+      color: rgb(216, 119, 22);
+    }
+
+    &:disabled{
+      color: gray;
+      border-color: gray;
+      cursor: auto;
+    }
+  }
+
+  &__image{
+    position: absolute;
+    left: 70px;
+    bottom: -5px;
+    transition-property: left;
+  }
+
+  &__flag{
+    position: absolute;
+    right: 120px;
+    bottom: -5px;
+    width: 40px;
+    height: 40px;
+    background-image: url(../assets/svg/finish-flag.svg);
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+}

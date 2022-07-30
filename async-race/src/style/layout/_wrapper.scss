@@ -1,0 +1,11 @@
+.wrapper{
+  display: flex;
+}
+
+.wrapper-color,
+.wrapper-buttons{
+  justify-content: flex-start;
+  align-items: center;
+  column-gap: 10px;
+  padding: 5px 0;
+}
