@@ -1,0 +1,26 @@
+{
+    "env": {
+        "browser": true,
+        "es2021": true
+    },
+    "extends": [
+      "plugin:prettier/recommended",
+      "prettier",
+      "airbnb-base"
+    ],
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+      "ecmaVersion": 2020,
+      "sourceType": "module",
+      "project": ["./tsconfig.json"],
+      "target": "es6"
+  },
+    "plugins": [
+        "@typescript-eslint"
+    ],
+    "rules": {
+      "@typescript-eslint/no-explicit-any": "error",
+      "no-debugger": "off",
+      "no-console": "off"
+    }
+}
