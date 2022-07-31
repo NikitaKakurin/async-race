@@ -6,10 +6,14 @@ const container = `<div class="container">
     <div class="wrapper-garage" id="wrapper-garage">
       <form action="#" method="#">
         <div class="wrapper wrapper-color">
-          <input type="text"><input type="color" name="color-create" id="color-create"><button>create</button>
+          <input type="text" id="name-create">
+          <input type="color" name="color-create" id="color-create">
+          <button id="create-car">create</button>
         </div>
         <div class="wrapper wrapper-color">
-          <input type="text"><input type="color" name="color-update" id="color-update"><button>update</button>
+          <input type="text" id="name-update">
+          <input type="color" name="color-update" id="color-update">
+          <button id="update-car">update</button>
         </div>
         <div class="wrapper wrapper-buttons">
           <button id="race">race</button><button id="reset">reset</button><button id="generate-cars">Generate cars</button>
