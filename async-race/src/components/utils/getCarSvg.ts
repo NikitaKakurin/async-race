@@ -1,23 +1,13 @@
-const carSvg = `<h2>garage(7)</h2>
-<h3>page #1</h3>
-<div class="car">
-  <div class="wrapper wrapper-buttons">
-    <button class="car__btn-select">select</button>
-    <button class="car__btn-remove">remove</button>
-    <h3 class="car__model">tesla s100</h3>
-  </div>
-  <div class="wrapper wrapper-image">
-    <button class="car__btn-start">A</button>
-    <button class="car__btn-stop" disabled>B</button>
-    <div class="car__image">
+const getCarSVG = (color: string, width: number, height: number) => {
+  const carSvg = `<div class="car__image">
       <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
-      width="64.000000pt" height="25.000000pt" viewBox="0 100 1280.000000 400.000000"
+      width="${width}px" height="${height}px" viewBox="0 100 1280.000000 400.000000"
       preserveAspectRatio="xMidYMid meet">
         <metadata>
         Created by potrace 1.15, written by Peter Selinger 2001-2017
         </metadata>
         <g transform="translate(0.000000,640.000000) scale(0.100000,-0.100000)"
-          fill="#ffaa55" stroke="none">
+          fill="${color}" stroke="none">
           <path d="M3565 5336 c-106 -30 -101 -26 -108 -111 -4 -42 -9 -80 -12 -85 -6
           -10 -246 -105 -590 -234 -448 -167 -1052 -415 -1173 -483 -78 -43 -193 -91
           -250 -104 -23 -5 -98 -14 -165 -19 -67 -6 -167 -19 -222 -30 -154 -31 -340
@@ -111,8 +101,8 @@ const carSvg = `<h2>garage(7)</h2>
           61 239 98 16 10 -216 242 -234 235z"/>
         </g>
       </svg>
-    </div>
-    <div class="car__flag"> 
-    </div>
-  </div>
-</div>`;
+    </div>`;
+  return carSvg;
+};
+
+export default getCarSVG;

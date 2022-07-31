@@ -18,6 +18,9 @@ const container = `<div class="container">
       <div class="garage" id="garage"></div>
     </div>
     <div class="wrapper-winners" id="wrapper-winners"></div>
+    <div class="pagination">
+      <button class="pagination__previous">previous page</button><button class="pagination__next">next page</button>
+    </div>
   </div>`;
 
 export default container;

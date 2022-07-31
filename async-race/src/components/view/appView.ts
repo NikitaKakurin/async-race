@@ -1,6 +1,6 @@
 import { IData } from '../typescript/type';
 import container from '../utils/container';
-import { garage } from '../utils/garage';
+import { getGarage } from '../utils/garage';
 
 class AppView {
   garageWrapper: HTMLDivElement | null;
@@ -16,11 +16,10 @@ class AppView {
   }
 
   drawGarage(data: IData) {
-    debugger;
     const { page, totalCount, cars } = data;
     if (this.garage === null) throw new Error('garage is not exist');
     this.garage = this.garage as HTMLDivElement;
-    this.garage.insertAdjacentHTML('afterbegin', garage);
+    this.garage.insertAdjacentHTML('afterbegin', getGarage(data));
   }
 
   drawContainer() {

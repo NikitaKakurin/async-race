@@ -37,14 +37,14 @@
   &__image{
     position: absolute;
     left: 70px;
-    bottom: -5px;
+    bottom: 0;
     transition-property: left;
   }
 
   &__flag{
     position: absolute;
     right: 120px;
-    bottom: -5px;
+    bottom: 0px;
     width: 40px;
     height: 40px;
     background-image: url(../assets/svg/finish-flag.svg);
