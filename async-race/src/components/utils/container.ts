@@ -11,9 +11,9 @@ const container = `<div class="container">
           <button id="create-car">create</button>
         </div>
         <div class="wrapper wrapper-color">
-          <input type="text" id="name-update">
-          <input type="color" name="color-update" id="color-update">
-          <button id="update-car">update</button>
+          <input type="text" id="name-update" disabled>
+          <input type="color" name="color-update" id="color-update" disabled>
+          <button id="update-car" disabled>update</button>
         </div>
         <div class="wrapper wrapper-buttons">
           <button id="race">race</button><button id="reset">reset</button><button id="generate-cars">Generate cars</button>

@@ -3,7 +3,7 @@ import getCarSVG from './getCarSvg';
 
 const getPageCars = (cars: CarsType) => {
   const allCars = cars.map((carObj) => {
-    const car = `<div class="car">
+    const car = `<div class="car" data-id="${carObj.id}">
         <div class="wrapper wrapper-buttons">
           <button class="car__btn-select">select</button>
           <button class="car__btn-remove">remove</button>
@@ -22,11 +22,12 @@ const getPageCars = (cars: CarsType) => {
   return allCars.join('\n');
 };
 
-export const getGarage = (data: IData): string => {
+const getGarage = (data: IData): string => {
   const { page, totalCount, cars } = data;
   const garage = `<h2>garage(${totalCount})</h2>
   <h3>page #${page}</h3>
   ${getPageCars(cars)}`;
-  console.log(cars);
   return garage;
 };
+
+export default getGarage;

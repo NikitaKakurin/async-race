@@ -1,4 +1,4 @@
-import { IData, CarsType } from '../typescript/type';
+import { IData, CarsType, ICar } from '../typescript/type';
 
 class Controller {
   readonly url: string;
@@ -31,8 +31,16 @@ class Controller {
     cb(result);
   }
 
+  async getCar(id: number, cb: (car: ICar) => void) {
+    const path = `${this.garageUrl}/${id}`;
+    const response = await fetch(path);
+    const car: ICar = await response.json();
+    cb(car);
+  }
+
   async createCar(name: string, color: string, cb: (data: IData) => void) {
     const param = { name, color };
+    const { page } = this;
     const response = await fetch(this.garageUrl, {
       method: 'POST',
       headers: {
@@ -41,7 +49,21 @@ class Controller {
       body: JSON.stringify(param),
     });
     await response.json();
-    this.getCars(this.page, cb);
+    this.getCars(page, cb);
+  }
+
+  async updateCar(id: number, name: string, color: string, cb: (data: IData) => void) {
+    const param = { name, color };
+    const { page } = this;
+    const response = await fetch(`${this.garageUrl}/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(param),
+    });
+    await response.json();
+    this.getCars(page, cb);
   }
 }
 
