@@ -23,9 +23,9 @@ const getPageCars = (cars: CarsType) => {
 };
 
 const getGarage = (data: IData): string => {
-  const { page, totalCount, cars } = data;
-  const garage = `<h2>garage(${totalCount})</h2>
-  <h3>page #${page}</h3>
+  const { currentPage, totalCount, cars } = data;
+  const garage = `<h2>Garage(${totalCount})</h2>
+  <h3> Page #${currentPage}</h3>
   ${getPageCars(cars)}`;
   return garage;
 };

@@ -1,4 +1,6 @@
 import { IData, CarsType, ICar } from '../typescript/type';
+import { brands, models } from '../utils/carsNames';
+import getRandomHexColor from '../utils/getRandomHexColor';
 
 interface ISpeedData {
   velocity: number;
@@ -24,6 +26,7 @@ class Controller {
 
   async getCars(page: number, cb: (data: IData) => void) {
     this.pageGarage = page;
+    const currentPage = page;
     console.log('getGArage');
     const path = `${this.garageUrl}?_page=${page}&_limit=${this.limitGarage}`;
     const response = await fetch(path);
@@ -32,10 +35,17 @@ class Controller {
     if (totalCountString === null || Number.isNaN(+totalCountString)) {
       throw new Error('X-Total-Count is null or not number');
     }
+    debugger;
     const totalCount = +totalCountString;
     this.totalCount = totalCount;
+    const totalPages = Math.ceil(totalCount / 7);
+    if (this.pageGarage > totalPages) {
+      this.getCars(totalPages, cb);
+      return;
+    }
+
     const result = {
-      page,
+      currentPage,
       totalCount,
       cars,
     };
@@ -58,7 +68,7 @@ class Controller {
     this.getCars(this.pageGarage, cb);
   }
 
-  async createCar(name: string, color: string, cb: (data: IData) => void) {
+  async createCar(name: string, color: string, cb?: (data: IData) => void) {
     const param = { name, color };
     const { pageGarage: page } = this;
     const response = await fetch(this.garageUrl, {
@@ -69,7 +79,27 @@ class Controller {
       body: JSON.stringify(param),
     });
     await response.json();
-    this.getCars(page, cb);
+    if (cb) {
+      this.getCars(page, cb);
+    }
+  }
+
+  generateCars(cb: (data: IData) => void) {
+    console.log('generate');
+
+    const brandsLength = brands.length;
+    const modelLength = brands.length;
+    const createCarPromises = [];
+    for (let i = 0; i < 100; i += 1) {
+      const randomBrand = brands[Math.floor(Math.random() * brandsLength)];
+      const randomModel = models[Math.floor(Math.random() * modelLength)];
+      const name = `${randomBrand} ${randomModel}`;
+      const color = getRandomHexColor();
+      createCarPromises.push(this.createCar(name, color));
+    }
+    Promise.all(createCarPromises).then(() => {
+      this.getCars(this.pageGarage, cb);
+    });
   }
 
   async updateCar(id: number, name: string, color: string, cb: (data: IData) => void) {

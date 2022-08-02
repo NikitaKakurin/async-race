@@ -103,6 +103,11 @@ class App {
         return;
       }
 
+      if (target.closest('#generate-cars')) {
+        this.controller.generateCars((data) => this.view.drawGarage(data));
+        return;
+      }
+
       if (target.closest('#pagination__next')) {
         this.controller.nextPage((data) => this.view.drawGarage(data));
         return;

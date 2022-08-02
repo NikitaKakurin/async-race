@@ -119,14 +119,14 @@ class AppView {
     if (!this.previousPage || !this.nextPage) throw new Error('this.previousPage or this.nextPage is not exist');
     const prev = this.previousPage as HTMLButtonElement;
     const next = this.nextPage as HTMLButtonElement;
-    if (data.page === 1) {
+    if (data.currentPage === 1) {
       prev.disabled = true;
     } else {
       prev.disabled = false;
     }
 
     const totalPages = Math.ceil(data.totalCount / 7);
-    if (totalPages === data.page) {
+    if (totalPages === data.currentPage) {
       next.disabled = true;
     } else {
       next.disabled = false;
