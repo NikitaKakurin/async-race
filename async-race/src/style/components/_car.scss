@@ -39,6 +39,7 @@
     left: 70px;
     bottom: 0;
     transition-property: left;
+    transition-timing-function: linear;
   }
 
   &__flag{

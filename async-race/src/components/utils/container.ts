@@ -23,7 +23,8 @@ const container = `<div class="container">
     </div>
     <div class="wrapper-winners" id="wrapper-winners"></div>
     <div class="pagination">
-      <button class="pagination__previous">previous page</button><button class="pagination__next">next page</button>
+      <button class="pagination__previous" id="pagination__previous">previous page</button>
+      <button class="pagination__next" id="pagination__next">next page</button>
     </div>
   </div>`;
 

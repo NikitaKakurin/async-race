@@ -1,4 +1,5 @@
 import Controller from '../controller/controller';
+import { IData } from '../typescript/type';
 import AppView from '../view/appView';
 
 class App {
@@ -57,10 +58,59 @@ class App {
         this.controller.getCar(numberId, (carObj) => {
           this.view.changeUpdateInputs(carObj);
         });
+        return;
       }
-      // if(){
 
-      // }
+      if (target.closest('.car__btn-remove')) {
+        const car = target.closest('.car') as HTMLElement | null;
+        if (!car) throw new Error('selected car is not exist');
+        const id = car.dataset?.id;
+        if (!id) throw new Error("selected car don't have id");
+        const numberId = +id;
+        this.id = numberId;
+        this.controller.removeCar(numberId, (data) => this.view.drawGarage(data));
+        return;
+      }
+
+      if (target.closest('.car__btn-start')) {
+        const car = target.closest('.car') as HTMLDivElement | null;
+        if (!car) throw new Error('selected car is not exist');
+        const id = car.dataset?.id;
+        if (!id) throw new Error("selected car don't have id");
+        const numberId = +id;
+        this.id = numberId;
+        this.controller.startCar(numberId, (timeTransition) => {
+          this.view.startCar(timeTransition, car);
+
+          this.controller.driveCar(numberId, (isOk: boolean) => {
+            if (isOk) return;
+            this.view.breakCar(car);
+          });
+        });
+        return;
+      }
+
+      if (target.closest('.car__btn-stop')) {
+        const car = target.closest('.car') as HTMLDivElement | null;
+        if (!car) throw new Error('selected car is not exist');
+        const id = car.dataset?.id;
+        if (!id) throw new Error("selected car don't have id");
+        const numberId = +id;
+        this.id = numberId;
+        this.controller.stopCar(numberId, () => {
+          this.view.stopCar(car);
+        });
+        return;
+      }
+
+      if (target.closest('#pagination__next')) {
+        this.controller.nextPage((data) => this.view.drawGarage(data));
+        return;
+      }
+
+      if (target.closest('#pagination__previous')) {
+        this.controller.prevPage((data) => this.view.drawGarage(data));
+      }
     };
     document.addEventListener('click', handleClick);
   }

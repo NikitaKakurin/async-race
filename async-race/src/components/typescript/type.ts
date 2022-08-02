@@ -7,6 +7,6 @@ export type CarsType = ICar[];
 
 export interface IData {
   page: number;
-  totalCount: string | null;
+  totalCount: number;
   cars: CarsType;
 }
