@@ -2,6 +2,15 @@ import Controller from '../controller/controller';
 import { IData } from '../typescript/type';
 import AppView from '../view/appView';
 
+const getCarElAndID = (target: HTMLElement) => {
+  const car = target.closest('.car') as HTMLDivElement | null;
+  if (!car) throw new Error('selected car is not exist');
+  const id = car.dataset?.id;
+  if (!id) throw new Error("selected car don't have id");
+  const numberId = +id;
+  return { car, numberId };
+};
+
 class App {
   private controller: Controller;
 
@@ -49,11 +58,7 @@ class App {
       }
 
       if (target.closest('.car__btn-select')) {
-        const car = target.closest('.car') as HTMLElement | null;
-        if (!car) throw new Error('selected car is not exist');
-        const id = car.dataset?.id;
-        if (!id) throw new Error("selected car don't have id");
-        const numberId = +id;
+        const { numberId } = getCarElAndID(target);
         this.id = numberId;
         this.controller.getCar(numberId, (carObj) => {
           this.view.changeUpdateInputs(carObj);
@@ -62,22 +67,14 @@ class App {
       }
 
       if (target.closest('.car__btn-remove')) {
-        const car = target.closest('.car') as HTMLElement | null;
-        if (!car) throw new Error('selected car is not exist');
-        const id = car.dataset?.id;
-        if (!id) throw new Error("selected car don't have id");
-        const numberId = +id;
+        const { numberId } = getCarElAndID(target);
         this.id = numberId;
         this.controller.removeCar(numberId, (data) => this.view.drawGarage(data));
         return;
       }
 
       if (target.closest('.car__btn-start')) {
-        const car = target.closest('.car') as HTMLDivElement | null;
-        if (!car) throw new Error('selected car is not exist');
-        const id = car.dataset?.id;
-        if (!id) throw new Error("selected car don't have id");
-        const numberId = +id;
+        const { car, numberId } = getCarElAndID(target);
         this.id = numberId;
         this.controller.startCar(numberId, (timeTransition) => {
           this.view.startCar(timeTransition, car);
@@ -90,12 +87,16 @@ class App {
         return;
       }
 
+      if (target.closest('#race')) {
+        this.controller.startRace((timeTransition, id) => {
+          const car = document.querySelector(`.car[data-id="${id}"]`) as HTMLDivElement | null;
+          if (!car) throw new Error('selected car is not exist');
+          this.view.startCar(timeTransition, car);
+        });
+      }
+
       if (target.closest('.car__btn-stop')) {
-        const car = target.closest('.car') as HTMLDivElement | null;
-        if (!car) throw new Error('selected car is not exist');
-        const id = car.dataset?.id;
-        if (!id) throw new Error("selected car don't have id");
-        const numberId = +id;
+        const { car, numberId } = getCarElAndID(target);
         this.id = numberId;
         this.controller.stopCar(numberId, () => {
           this.view.stopCar(car);

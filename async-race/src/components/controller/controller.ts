@@ -6,6 +6,7 @@ interface ISpeedData {
   velocity: number;
   distance: number;
 }
+
 class Controller {
   readonly url: string;
 
@@ -27,7 +28,6 @@ class Controller {
   async getCars(page: number, cb: (data: IData) => void) {
     this.pageGarage = page;
     const currentPage = page;
-    console.log('getGArage');
     const path = `${this.garageUrl}?_page=${page}&_limit=${this.limitGarage}`;
     const response = await fetch(path);
     const cars: CarsType = await response.json();
@@ -35,7 +35,7 @@ class Controller {
     if (totalCountString === null || Number.isNaN(+totalCountString)) {
       throw new Error('X-Total-Count is null or not number');
     }
-    debugger;
+
     const totalCount = +totalCountString;
     this.totalCount = totalCount;
     const totalPages = Math.ceil(totalCount / 7);
@@ -116,12 +116,16 @@ class Controller {
     this.getCars(page, cb);
   }
 
-  async startCar(id: number, cb: (data: number) => void) {
+  async startCar(id: number, cb: (time: number, id?: number) => void) {
     const response = await fetch(`${this.url}/engine?id=${id}&status=started`, {
       method: 'PATCH',
     });
     const getTransitionTime = (data: ISpeedData) => data.distance / data.velocity;
     const param = await response.json().then(getTransitionTime, null);
+    if (id !== undefined) {
+      cb(param, id);
+      return;
+    }
     cb(param);
   }
 
@@ -139,6 +143,14 @@ class Controller {
     });
     const res = await response.ok;
     cb();
+  }
+
+  async startRace(cb: (timeTransition: number, id?: number) => void) {
+    const page = this.pageGarage;
+    this.getCars(page, (data) => {
+      const { cars } = data;
+      const allStartCars = cars.map((car) => this.startCar(car.id, cb));
+    });
   }
 
   nextPage(cb: (data: IData) => void) {
