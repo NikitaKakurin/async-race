@@ -88,10 +88,11 @@ class App {
       }
 
       if (target.closest('#race')) {
-        this.controller.startRace((timeTransition, id) => {
+        this.controller.startRace((param) => {
+          const { time, id } = param;
           const car = document.querySelector(`.car[data-id="${id}"]`) as HTMLDivElement | null;
           if (!car) throw new Error('selected car is not exist');
-          this.view.startCar(timeTransition, car);
+          this.view.startCar(time, car);
         });
       }
 

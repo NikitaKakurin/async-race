@@ -7,6 +7,15 @@ interface ISpeedData {
   distance: number;
 }
 
+interface IRaceParam {
+  time: number;
+  id: number;
+}
+// interface IStartRaceData {
+//   prom: Promise;
+//   id: number;
+// }
+
 class Controller {
   readonly url: string;
 
@@ -116,40 +125,45 @@ class Controller {
     this.getCars(page, cb);
   }
 
-  async startCar(id: number, cb: (time: number, id?: number) => void) {
-    const response = await fetch(`${this.url}/engine?id=${id}&status=started`, {
+  async sendStatusCar(id: number, status: string) {
+    const response = await fetch(`${this.url}/engine?id=${id}&status=${status}`, {
       method: 'PATCH',
     });
+    return response;
+  }
+
+  async startCar(id: number, cb: (time: number, id?: number) => void) {
     const getTransitionTime = (data: ISpeedData) => data.distance / data.velocity;
-    const param = await response.json().then(getTransitionTime, null);
-    if (id !== undefined) {
-      cb(param, id);
-      return;
-    }
+    const param = await (await this.sendStatusCar(id, 'started')).json().then(getTransitionTime, null);
     cb(param);
   }
 
   async driveCar(id: number, cb: (data: boolean) => void) {
-    const response = await fetch(`${this.url}/engine?id=${id}&status=drive`, {
-      method: 'PATCH',
-    });
-    const res = await response.ok;
+    const res = (await this.sendStatusCar(id, 'drive')).ok;
     cb(res);
   }
 
   async stopCar(id: number, cb: () => void) {
-    const response = await fetch(`${this.url}/engine?id=${id}&status=stopped`, {
-      method: 'PATCH',
-    });
-    const res = await response.ok;
+    const res = (await this.sendStatusCar(id, 'stopped')).ok;
     cb();
   }
 
-  async startRace(cb: (timeTransition: number, id?: number) => void) {
+  async startRace(cb: (param: IRaceParam) => void) {
     const page = this.pageGarage;
     this.getCars(page, (data) => {
       const { cars } = data;
-      const allStartCars = cars.map((car) => this.startCar(car.id, cb));
+      const allStartCars = cars.map(async (car) => {
+        const getTransitionTime = (param: ISpeedData) => {
+          const time = param.distance / param.velocity;
+          const { id } = car;
+          return { time, id };
+        };
+        const response = await this.sendStatusCar(car.id, 'started');
+        return response.json().then(getTransitionTime);
+      });
+      Promise.all(allStartCars).then((arr) => {
+        arr.forEach(cb);
+      });
     });
   }
 
