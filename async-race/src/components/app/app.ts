@@ -93,8 +93,25 @@ class App {
           const car = document.querySelector(`.car[data-id="${id}"]`) as HTMLDivElement | null;
           if (!car) throw new Error('selected car is not exist');
           this.view.startCar(time, car);
+          this.controller.driveCar(id, (isOk: boolean) => {
+            if (isOk) return;
+            this.view.breakCar(car);
+          });
         });
       }
+
+      // if (target.closest('#reset')) {
+      //   this.controller.sRace((param) => {
+      //     const { time, id } = param;
+      //     const car = document.querySelector(`.car[data-id="${id}"]`) as HTMLDivElement | null;
+      //     if (!car) throw new Error('selected car is not exist');
+      //     this.view.startCar(time, car);
+      //     this.controller.driveCar(id, (isOk: boolean) => {
+      //       if (isOk) return;
+      //       this.view.breakCar(car);
+      //     });
+      //   });
+      // }
 
       if (target.closest('.car__btn-stop')) {
         const { car, numberId } = getCarElAndID(target);
