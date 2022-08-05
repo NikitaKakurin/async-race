@@ -40,24 +40,28 @@ class AppView {
     this.garage.innerHTML = '';
     this.garage.insertAdjacentHTML('afterbegin', getGarage(data));
     this.disablePagination(data);
+    this.getElementsGarage();
   }
 
   drawContainer() {
     document.body.insertAdjacentHTML('afterbegin', container);
-    this.getElements();
+    this.getElementsContainer();
   }
 
-  getElements() {
+  getElementsContainer() {
     this.garageWrapper = getElById('wrapper-garage') as HTMLDivElement;
     this.winnersWrapper = getElById('wrapper-winners') as HTMLDivElement;
     this.garage = getElById('garage') as HTMLDivElement;
+    this.nextPage = getElById('pagination__next') as HTMLButtonElement;
+    this.previousPage = getElById('pagination__previous') as HTMLButtonElement;
+  }
+
+  getElementsGarage() {
     this.createCarColor = getElById('color-create') as HTMLInputElement;
     this.createCarName = getElById('name-create') as HTMLInputElement;
     this.updateCarColor = getElById('color-update') as HTMLInputElement;
     this.updateCarName = getElById('name-update') as HTMLInputElement;
     this.updateCarBtn = getElById('update-car') as HTMLButtonElement;
-    this.nextPage = getElById('pagination__next') as HTMLButtonElement;
-    this.previousPage = getElById('pagination__previous') as HTMLButtonElement;
   }
 
   changeUpdateInputs(carObj: ICar) {

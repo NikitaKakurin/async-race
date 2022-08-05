@@ -24,7 +24,22 @@ const getPageCars = (cars: CarsType) => {
 
 const getGarage = (data: IData): string => {
   const { currentPage, totalCount, cars } = data;
-  const garage = `<h2>Garage(${totalCount})</h2>
+  const garage = `<form action="#" method="#">
+    <div class="wrapper wrapper-color">
+      <input type="text" id="name-create">
+      <input type="color" name="color-create" id="color-create">
+      <button id="create-car">create</button>
+    </div>
+    <div class="wrapper wrapper-color">
+      <input type="text" id="name-update" disabled>
+      <input type="color" name="color-update" id="color-update" disabled>
+      <button id="update-car" disabled>update</button>
+    </div>
+    <div class="wrapper wrapper-buttons">
+      <button id="race">race</button><button id="reset" disabled>reset</button><button id="generate-cars">Generate cars</button>
+    </div>
+  </form>
+  <h2>Garage(${totalCount})</h2>
   <h3> Page #${currentPage}</h3>
   <div class="modal" id="modal">
     <div class="modal__container">
