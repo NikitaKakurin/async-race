@@ -108,11 +108,49 @@ class AppView {
     carImage.style.left = `${currentPosition - offsetLeft}px`;
   }
 
-  changeDisableBtn(car: HTMLDivElement, disabledClass: string, enabledClass: string) {
-    const disabledEl = getElBySelector(disabledClass, car) as HTMLButtonElement;
-    const enabledEL = getElBySelector(enabledClass, car) as HTMLButtonElement;
+  changeDisableBtn(car: HTMLDivElement, disabledSelector: string, enabledSelector: string) {
+    const disabledEl = getElBySelector(disabledSelector, car) as HTMLButtonElement;
+    const enabledEL = getElBySelector(enabledSelector, car) as HTMLButtonElement;
     disabledEl.disabled = true;
     enabledEL.disabled = false;
+  }
+
+  showModal(data: ICar, time: number) {
+    const { name, id } = data;
+    const fixedTime = Math.floor(time / 1000).toFixed(2);
+    const modal = getElById('modal') as HTMLDivElement;
+    const modalText = getElById('modal__text') as HTMLDivElement;
+    const modalClose = getElById('modal__close') as HTMLDivElement;
+    modalText.textContent = `${name} #${id} ${fixedTime}s`;
+    modal.classList.add('modal-show');
+    modalClose.addEventListener(
+      'click',
+      () => {
+        modal.classList.remove('modal-show');
+      },
+      { once: true },
+    );
+  }
+
+  disableAllBtn(className: string) {
+    const allStopButtons = Array.from(document.querySelectorAll(className));
+    allStopButtons.forEach((el) => {
+      if (el.tagName !== 'BUTTON') throw new Error(`stop button is not button (${el.tagName})`);
+      const elem = el as HTMLButtonElement;
+      elem.disabled = true;
+    });
+  }
+
+  disableBtn(disabledSelector: string) {
+    const el = document.querySelector(disabledSelector);
+    if (!el) throw new Error('button is not exist');
+    (el as HTMLButtonElement).disabled = true;
+  }
+
+  enableBtn(enableSelector: string) {
+    const el = document.querySelector(enableSelector);
+    if (!el) throw new Error('button is not exist');
+    (el as HTMLButtonElement).disabled = false;
   }
 
   disablePagination(data: IData) {

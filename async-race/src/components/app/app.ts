@@ -1,3 +1,4 @@
+import { HtmlTagObject } from 'html-webpack-plugin';
 import Controller from '../controller/controller';
 import { IData } from '../typescript/type';
 import AppView from '../view/appView';
@@ -11,6 +12,16 @@ const getCarElAndID = (target: HTMLElement) => {
   return { car, numberId };
 };
 
+const getCarByID = (id: number) => {
+  const car = document.querySelector(`.car[data-id="${id}"]`);
+  if (!car) throw new Error('selected car is not exist');
+  return car as HTMLDivElement;
+};
+
+interface IRaceTimeById {
+  [x: number]: number;
+}
+
 class App {
   private controller: Controller;
 
@@ -22,11 +33,14 @@ class App {
 
   id?: number;
 
+  timeObj: IRaceTimeById;
+
   constructor() {
     this.controller = new Controller();
     this.view = new AppView();
     this.garagePage = 1;
     this.winnersPage = 1;
+    this.timeObj = {};
   }
 
   start(): void {
@@ -74,6 +88,7 @@ class App {
       }
 
       if (target.closest('.car__btn-start')) {
+        (target.closest('.car__btn-start') as HTMLButtonElement).disabled = true;
         const { car, numberId } = getCarElAndID(target);
         this.id = numberId;
         this.controller.startCar(numberId, (timeTransition) => {
@@ -88,30 +103,38 @@ class App {
       }
 
       if (target.closest('#race')) {
+        this.timeObj = {};
+        let winnersId = 0;
+        this.view.disableBtn('#race');
         this.controller.startRace((param) => {
           const { time, id } = param;
-          const car = document.querySelector(`.car[data-id="${id}"]`) as HTMLDivElement | null;
-          if (!car) throw new Error('selected car is not exist');
+          this.timeObj[id] = time;
+          const car = getCarByID(id);
           this.view.startCar(time, car);
           this.controller.driveCar(id, (isOk: boolean) => {
-            if (isOk) return;
-            this.view.breakCar(car);
+            if (!isOk) {
+              this.view.breakCar(car);
+              return;
+            }
+            if (winnersId) return;
+            winnersId = id;
+            this.controller.getCar(id, (data) => {
+              this.view.enableBtn('#reset');
+              this.view.showModal(data, this.timeObj[data.id]);
+            });
           });
         });
       }
 
-      // if (target.closest('#reset')) {
-      //   this.controller.sRace((param) => {
-      //     const { time, id } = param;
-      //     const car = document.querySelector(`.car[data-id="${id}"]`) as HTMLDivElement | null;
-      //     if (!car) throw new Error('selected car is not exist');
-      //     this.view.startCar(time, car);
-      //     this.controller.driveCar(id, (isOk: boolean) => {
-      //       if (isOk) return;
-      //       this.view.breakCar(car);
-      //     });
-      //   });
-      // }
+      if (target.closest('#reset')) {
+        this.view.disableBtn('#reset');
+        this.view.disableAllBtn('.car__btn-stop');
+        this.controller.resetRace((id) => {
+          const car = getCarByID(id);
+          this.view.stopCar(car);
+          this.view.enableBtn('#race');
+        });
+      }
 
       if (target.closest('.car__btn-stop')) {
         const { car, numberId } = getCarElAndID(target);

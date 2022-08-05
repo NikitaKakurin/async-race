@@ -11,10 +11,11 @@ interface IRaceParam {
   time: number;
   id: number;
 }
-// interface IStartRaceData {
-//   prom: Promise;
-//   id: number;
-// }
+
+interface IResetParam {
+  isOk: boolean;
+  id: number;
+}
 
 class Controller {
   readonly url: string;
@@ -26,6 +27,8 @@ class Controller {
   pageGarage: number;
 
   totalCount?: number;
+
+  arrayRaceCars?: IRaceParam[];
 
   constructor() {
     this.url = 'http://127.0.0.1:3000';
@@ -162,8 +165,17 @@ class Controller {
         return response.json().then(getTransitionTime);
       });
       Promise.all(allStartCars).then((arr) => {
+        this.arrayRaceCars = arr;
         arr.forEach(cb);
       });
+    });
+  }
+
+  async resetRace(cb: (id: number) => void) {
+    this.arrayRaceCars?.forEach(async (data) => {
+      const { id } = data;
+      const isOk = (await this.sendStatusCar(id, 'stopped')).ok;
+      cb(id);
     });
   }
 
