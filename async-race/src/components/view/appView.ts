@@ -1,4 +1,4 @@
-import { ICar, IData } from '../typescript/type';
+import { ICar, IDataGarage } from '../typescript/type';
 import container from '../utils/container';
 import getGarage from '../utils/getGarage';
 
@@ -13,12 +13,15 @@ const getElBySelector = (selector: string, parent: HTMLDivElement) => {
   if (!el) throw new Error(`${selector} is not exist`);
   return el as HTMLElement;
 };
+
 class AppView {
   garageWrapper?: HTMLDivElement;
 
   winnersWrapper?: HTMLDivElement;
 
   garage?: HTMLDivElement;
+
+  winners?: HTMLDivElement;
 
   createCarColor?: HTMLInputElement;
 
@@ -34,13 +37,25 @@ class AppView {
 
   nextPage?: HTMLButtonElement;
 
-  drawGarage(data: IData) {
+  clearGarageAndWinners() {
     if (this.garage === null) throw new Error('garage is not exist');
     this.garage = this.garage as HTMLDivElement;
     this.garage.innerHTML = '';
-    this.garage.insertAdjacentHTML('afterbegin', getGarage(data));
-    this.disablePagination(data);
+    if (this.winners === null) throw new Error('winners is not exist');
+    this.winners = this.winners as HTMLDivElement;
+    this.winners.innerHTML = '';
+  }
+
+  drawGarage(data: IDataGarage) {
+    this.clearGarageAndWinners();
+    (this.garage as HTMLDivElement).insertAdjacentHTML('afterbegin', getGarage(data));
     this.getElementsGarage();
+    this.disablePagination(data);
+  }
+
+  drawWinners() {
+    this.clearGarageAndWinners();
+    (this.winners as HTMLDivElement).innerHTML = '';
   }
 
   drawContainer() {
@@ -52,6 +67,7 @@ class AppView {
     this.garageWrapper = getElById('wrapper-garage') as HTMLDivElement;
     this.winnersWrapper = getElById('wrapper-winners') as HTMLDivElement;
     this.garage = getElById('garage') as HTMLDivElement;
+    this.winners = getElById('winners') as HTMLDivElement;
     this.nextPage = getElById('pagination__next') as HTMLButtonElement;
     this.previousPage = getElById('pagination__previous') as HTMLButtonElement;
   }
@@ -157,8 +173,10 @@ class AppView {
     (el as HTMLButtonElement).disabled = false;
   }
 
-  disablePagination(data: IData) {
-    if (!this.previousPage || !this.nextPage) throw new Error('this.previousPage or this.nextPage is not exist');
+  disablePagination(data: IDataGarage) {
+    if (!this.previousPage || !this.nextPage) {
+      throw new Error('this.previousPage or this.nextPage is not exist');
+    }
     const prev = this.previousPage as HTMLButtonElement;
     const next = this.nextPage as HTMLButtonElement;
     if (data.currentPage === 1) {
