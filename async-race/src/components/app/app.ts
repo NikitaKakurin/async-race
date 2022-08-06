@@ -1,6 +1,6 @@
 import { HtmlTagObject } from 'html-webpack-plugin';
 import Controller from '../controller/controller';
-import { IData } from '../typescript/type';
+import { IDataGarage } from '../typescript/type';
 import AppView from '../view/appView';
 
 const getCarElAndID = (target: HTMLElement) => {
@@ -50,6 +50,16 @@ class App {
     const handleClick = (e: Event) => {
       if (e.target === null) throw new Error('target is null');
       const target = e.target as HTMLElement;
+
+      if (target.closest('#toGarageBtn')) {
+        this.controller.getCars(this.controller.pageGarage, (data) => this.view.drawGarage(data));
+        return;
+      }
+
+      if (target.closest('#toWinnersBtn')) {
+        this.controller.getWinners(this.controller.pageWinners, (data) => this.view.drawWinners(data));
+        return;
+      }
 
       if (target.closest('#create-car')) {
         const color = this.view.createCarColor?.value;

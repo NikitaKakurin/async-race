@@ -6,7 +6,9 @@ const container = `<div class="container">
     <div class="wrapper-garage" id="wrapper-garage">
       <div class="garage" id="garage"></div>
     </div>
-    <div class="wrapper-winners" id="wrapper-winners"></div>
+    <div class="wrapper-winners" id="wrapper-winners">
+      <div class="winners" id="winners"></div>
+    </div>
     <div class="pagination">
       <button class="pagination__previous" id="pagination__previous">previous page</button>
       <button class="pagination__next" id="pagination__next">next page</button>

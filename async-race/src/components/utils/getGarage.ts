@@ -1,4 +1,4 @@
-import { IData, CarsType } from '../typescript/type';
+import { IDataGarage, CarsType } from '../typescript/type';
 import getCarSVG from './getCarSvg';
 
 const getPageCars = (cars: CarsType) => {
@@ -22,23 +22,9 @@ const getPageCars = (cars: CarsType) => {
   return allCars.join('\n');
 };
 
-const getGarage = (data: IData): string => {
+const getGarage = (data: IDataGarage): string => {
   const { currentPage, totalCount, cars } = data;
-  const garage = `<form action="#" method="#">
-    <div class="wrapper wrapper-color">
-      <input type="text" id="name-create">
-      <input type="color" name="color-create" id="color-create">
-      <button id="create-car">create</button>
-    </div>
-    <div class="wrapper wrapper-color">
-      <input type="text" id="name-update" disabled>
-      <input type="color" name="color-update" id="color-update" disabled>
-      <button id="update-car" disabled>update</button>
-    </div>
-    <div class="wrapper wrapper-buttons">
-      <button id="race">race</button><button id="reset" disabled>reset</button><button id="generate-cars">Generate cars</button>
-    </div>
-  </form>
+  const garage = `
   <h2>Garage(${totalCount})</h2>
   <h3> Page #${currentPage}</h3>
   <div class="modal" id="modal">
@@ -51,5 +37,21 @@ const getGarage = (data: IData): string => {
   ${getPageCars(cars)}`;
   return garage;
 };
+
+const formGarage = `<form action="#" method="#">
+<div class="wrapper wrapper-color">
+  <input type="text" id="name-create">
+  <input type="color" name="color-create" id="color-create">
+  <button id="create-car">create</button>
+</div>
+<div class="wrapper wrapper-color">
+  <input type="text" id="name-update" disabled>
+  <input type="color" name="color-update" id="color-update" disabled>
+  <button id="update-car" disabled>update</button>
+</div>
+<div class="wrapper wrapper-buttons">
+  <button id="race">race</button><button id="reset" disabled>reset</button><button id="generate-cars">Generate cars</button>
+</div>
+</form>`;
 
 export default getGarage;
