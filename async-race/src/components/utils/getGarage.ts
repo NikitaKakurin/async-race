@@ -22,22 +22,6 @@ const getPageCars = (cars: CarsType) => {
   return allCars.join('\n');
 };
 
-const getGarage = (data: IDataGarage): string => {
-  const { currentPage, totalCount, cars } = data;
-  const garage = `
-  <h2>Garage(${totalCount})</h2>
-  <h3> Page #${currentPage}</h3>
-  <div class="modal" id="modal">
-    <div class="modal__container">
-      <div class=modal__title>Our Winner</div>
-      <div class="modal__text" id="modal__text"></div>
-      <div class="modal__close" id="modal__close"></div>
-    </div>
-  </div>
-  ${getPageCars(cars)}`;
-  return garage;
-};
-
 const formGarage = `<form action="#" method="#">
 <div class="wrapper wrapper-color">
   <input type="text" id="name-create">
@@ -53,5 +37,22 @@ const formGarage = `<form action="#" method="#">
   <button id="race">race</button><button id="reset" disabled>reset</button><button id="generate-cars">Generate cars</button>
 </div>
 </form>`;
+
+const getGarage = (data: IDataGarage): string => {
+  const { currentPage, totalCount, cars } = data;
+  const garage = `
+  ${formGarage}
+  <h2>Garage(${totalCount})</h2>
+  <h3> Page #${currentPage}</h3>
+  <div class="modal" id="modal">
+    <div class="modal__container">
+      <div class=modal__title>Our Winner</div>
+      <div class="modal__text" id="modal__text"></div>
+      <div class="modal__close" id="modal__close"></div>
+    </div>
+  </div>
+  ${getPageCars(cars)}`;
+  return garage;
+};
 
 export default getGarage;

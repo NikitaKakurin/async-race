@@ -55,18 +55,19 @@ class App {
         return;
       }
 
-      if (target.closest('#toWinnersBtn')) {
-        this.controller.getWinners(this.controller.pageWinners, (data) =>
-          this.view.drawWinners(data)
-        );
-        return;
-      }
+      // if (target.closest('#toWinnersBtn')) {
+      //   this.controller.getWinners(this.controller.pageWinners, (data) =>
+      //     this.view.drawWinners(data)
+      //   );
+      //   return;
+      // }
 
       if (target.closest('#create-car')) {
         const color = this.view.createCarColor?.value;
         const name = this.view.createCarName?.value;
-        if (name === undefined || color === undefined)
+        if (name === undefined || color === undefined) {
           throw new Error('name or color is undefined');
+        }
         this.controller.createCar(name, color, (data) => this.view.drawGarage(data));
         return;
       }

@@ -1,4 +1,4 @@
-import { IData, CarsType, ICar } from '../typescript/type';
+import { IDataGarage, CarsType, ICar } from '../typescript/type';
 import { brands, models } from '../utils/carsNames';
 import getRandomHexColor from '../utils/getRandomHexColor';
 
@@ -37,7 +37,7 @@ class Controller {
     this.pageGarage = 1;
   }
 
-  async getCars(page: number, cb: (data: IData) => void) {
+  async getCars(page: number, cb: (data: IDataGarage) => void) {
     this.pageGarage = page;
     const currentPage = page;
     const path = `${this.garageUrl}?_page=${page}&_limit=${this.limitGarage}`;
@@ -71,7 +71,7 @@ class Controller {
     cb(car);
   }
 
-  async removeCar(id: number, cb: (data: IData) => void) {
+  async removeCar(id: number, cb: (data: IDataGarage) => void) {
     const path = `${this.garageUrl}/${id}`;
     const response = await fetch(path, {
       method: 'DELETE',
@@ -80,7 +80,7 @@ class Controller {
     this.getCars(this.pageGarage, cb);
   }
 
-  async createCar(name: string, color: string, cb?: (data: IData) => void) {
+  async createCar(name: string, color: string, cb?: (data: IDataGarage) => void) {
     const param = { name, color };
     const { pageGarage: page } = this;
     const response = await fetch(this.garageUrl, {
@@ -96,7 +96,7 @@ class Controller {
     }
   }
 
-  generateCars(cb: (data: IData) => void) {
+  generateCars(cb: (data: IDataGarage) => void) {
     console.log('generate');
 
     const brandsLength = brands.length;
@@ -114,7 +114,7 @@ class Controller {
     });
   }
 
-  async updateCar(id: number, name: string, color: string, cb: (data: IData) => void) {
+  async updateCar(id: number, name: string, color: string, cb: (data: IDataGarage) => void) {
     const param = { name, color };
     const { pageGarage: page } = this;
     const response = await fetch(`${this.garageUrl}/${id}`, {
@@ -137,7 +137,9 @@ class Controller {
 
   async startCar(id: number, cb: (time: number, id?: number) => void) {
     const getTransitionTime = (data: ISpeedData) => data.distance / data.velocity;
-    const param = await (await this.sendStatusCar(id, 'started')).json().then(getTransitionTime, null);
+    const param = await (await this.sendStatusCar(id, 'started'))
+      .json()
+      .then(getTransitionTime, null);
     cb(param);
   }
 
@@ -179,14 +181,14 @@ class Controller {
     });
   }
 
-  nextPage(cb: (data: IData) => void) {
+  nextPage(cb: (data: IDataGarage) => void) {
     if (!this.totalCount) throw new Error('this.totalCount is not exist');
     if (this.pageGarage + 1 > this.totalCount) return;
     this.pageGarage += 1;
     this.getCars(this.pageGarage, cb);
   }
 
-  prevPage(cb: (data: IData) => void) {
+  prevPage(cb: (data: IDataGarage) => void) {
     if (!this.totalCount) throw new Error('this.totalCount is not exist');
     if (this.pageGarage === 1) return;
     this.pageGarage -= 1;
