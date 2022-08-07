@@ -1,6 +1,8 @@
 export interface ICar {
-  name: string;
-  color: string;
+  name?: string;
+  color?: string;
+  time?: number;
+  wins?: number;
   id: number;
 }
 
@@ -12,14 +14,14 @@ export interface IWinner {
 export type CarsType = ICar[];
 
 export type WinnersType = IWinner[];
-export interface IDataGarage {
+export interface IData {
   currentPage: number;
   totalCount: number;
-  cars: CarsType;
+  cars?: CarsType;
 }
 
 export interface IDataWinners {
   currentPage: number;
   totalCount: number;
-  units: WinnersType;
+  winners?: WinnersType;
 }

@@ -1,5 +1,5 @@
 import Controller from '../controller/controller';
-import { IDataGarage } from '../typescript/type';
+import { IData } from '../typescript/type';
 import AppView from '../view/appView';
 
 const getCarElAndID = (target: HTMLElement) => {
@@ -43,52 +43,51 @@ class App {
   }
 
   start(): void {
-    this.view.drawContainer();
-    this.controller.getCars(1, (data) => this.view.drawGarage(data));
+    const { controller, view } = this;
+    view.drawContainer();
+    controller.getCars(1, (data) => view.drawGarage(data));
 
     const handleClick = (e: Event) => {
       if (e.target === null) throw new Error('target is null');
       const target = e.target as HTMLElement;
 
       if (target.closest('#toGarageBtn')) {
-        this.controller.getCars(this.controller.pageGarage, (data) => this.view.drawGarage(data));
+        controller.getCars(controller.pageGarage, (data) => view.drawGarage(data));
         return;
       }
 
-      // if (target.closest('#toWinnersBtn')) {
-      //   this.controller.getWinners(this.controller.pageWinners, (data) =>
-      //     this.view.drawWinners(data)
-      //   );
-      //   return;
-      // }
+      if (target.closest('#toWinnersBtn')) {
+        controller.getWinners(controller.pageWinners, (data) => view.drawWinners(data));
+        return;
+      }
 
       if (target.closest('#create-car')) {
-        const color = this.view.createCarColor?.value;
-        const name = this.view.createCarName?.value;
+        const color = view.createCarColor?.value;
+        const name = view.createCarName?.value;
         if (name === undefined || color === undefined) {
           throw new Error('name or color is undefined');
         }
-        this.controller.createCar(name, color, (data) => this.view.drawGarage(data));
+        controller.createCar(name, color, (data) => view.drawGarage(data));
         return;
       }
 
       if (target.closest('#update-car')) {
-        const color = this.view.updateCarColor?.value;
-        const name = this.view.updateCarName?.value;
+        const color = view.updateCarColor?.value;
+        const name = view.updateCarName?.value;
         if (name === undefined || color === undefined || this.id === undefined) {
-          throw new Error('name or color or this.id is undefined');
+          throw new Error('name or color or id is undefined');
         }
         const { id } = this;
-        this.controller.updateCar(id, name, color, (data) => this.view.drawGarage(data));
-        this.view.disableUpdateInputs();
+        controller.updateCar(id, name, color, (data) => view.drawGarage(data));
+        view.disableUpdateInputs();
         return;
       }
 
       if (target.closest('.car__btn-select')) {
         const { numberId } = getCarElAndID(target);
         this.id = numberId;
-        this.controller.getCar(numberId, (carObj) => {
-          this.view.changeUpdateInputs(carObj);
+        controller.getCar(numberId, (carObj) => {
+          view.changeUpdateInputs(carObj);
         });
         return;
       }
@@ -96,7 +95,7 @@ class App {
       if (target.closest('.car__btn-remove')) {
         const { numberId } = getCarElAndID(target);
         this.id = numberId;
-        this.controller.removeCar(numberId, (data) => this.view.drawGarage(data));
+        controller.removeCar(numberId, (data) => view.drawGarage(data));
         return;
       }
 
@@ -104,12 +103,12 @@ class App {
         (target.closest('.car__btn-start') as HTMLButtonElement).disabled = true;
         const { car, numberId } = getCarElAndID(target);
         this.id = numberId;
-        this.controller.startCar(numberId, (timeTransition) => {
-          this.view.startCar(timeTransition, car);
+        controller.startCar(numberId, (timeTransition) => {
+          view.startCar(timeTransition, car);
 
-          this.controller.driveCar(numberId, (isOk: boolean) => {
+          controller.driveCar(numberId, (isOk: boolean) => {
             if (isOk) return;
-            this.view.breakCar(car);
+            view.breakCar(car);
           });
         });
         return;
@@ -118,58 +117,58 @@ class App {
       if (target.closest('#race')) {
         this.timeObj = {};
         let winnersId = 0;
-        this.view.disableBtn('#race');
-        this.controller.startRace((param) => {
+        view.disableBtn('#race');
+        controller.startRace((param) => {
           const { time, id } = param;
           this.timeObj[id] = time;
           const car = getCarByID(id);
-          this.view.startCar(time, car);
-          this.controller.driveCar(id, (isOk: boolean) => {
+          view.startCar(time, car);
+          controller.driveCar(id, (isOk: boolean) => {
             if (!isOk) {
-              this.view.breakCar(car);
+              view.breakCar(car);
               return;
             }
             if (winnersId) return;
             winnersId = id;
-            this.controller.getCar(id, (data) => {
-              this.view.enableBtn('#reset');
-              this.view.showModal(data, this.timeObj[data.id]);
+            controller.getCar(id, (data) => {
+              view.enableBtn('#reset');
+              view.showModal(data, this.timeObj[data.id]);
             });
           });
         });
       }
 
       if (target.closest('#reset')) {
-        this.view.disableBtn('#reset');
-        this.view.disableAllBtn('.car__btn-stop');
-        this.controller.resetRace((id) => {
+        view.disableBtn('#reset');
+        view.disableAllBtn('.car__btn-stop');
+        controller.resetRace((id) => {
           const car = getCarByID(id);
-          this.view.stopCar(car);
-          this.view.enableBtn('#race');
+          view.stopCar(car);
+          view.enableBtn('#race');
         });
       }
 
       if (target.closest('.car__btn-stop')) {
         const { car, numberId } = getCarElAndID(target);
         this.id = numberId;
-        this.controller.stopCar(numberId, () => {
-          this.view.stopCar(car);
+        controller.stopCar(numberId, () => {
+          view.stopCar(car);
         });
         return;
       }
 
       if (target.closest('#generate-cars')) {
-        this.controller.generateCars((data) => this.view.drawGarage(data));
+        controller.generateCars((data) => view.drawGarage(data));
         return;
       }
 
       if (target.closest('#pagination__next')) {
-        this.controller.nextPage((data) => this.view.drawGarage(data));
+        controller.nextPage((data) => view.drawGarage(data));
         return;
       }
 
       if (target.closest('#pagination__previous')) {
-        this.controller.prevPage((data) => this.view.drawGarage(data));
+        controller.prevPage((data) => view.drawGarage(data));
       }
     };
     document.addEventListener('click', handleClick);

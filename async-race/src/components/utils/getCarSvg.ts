@@ -1,5 +1,5 @@
-const getCarSVG = (color: string, width: number, height: number) => {
-  const carSvg = `<div class="car__image">
+const getCarSVG = (color: string, width: number, height: number, className: string) => {
+  const carSvg = `<div class="${className}">
       <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
       width="${width}px" height="${height}px" viewBox="0 100 1280.000000 400.000000"
       preserveAspectRatio="xMidYMid meet">

@@ -1,18 +1,20 @@
-import { IDataGarage, CarsType } from '../typescript/type';
+import { IData, CarsType } from '../typescript/type';
 import getCarSVG from './getCarSvg';
 
 const getPageCars = (cars: CarsType) => {
   const allCars = cars.map((carObj) => {
-    const car = `<div class="car" data-id="${carObj.id}">
+    const { id, color, name } = carObj;
+    if (typeof color !== 'string') throw new Error('color is not string');
+    const car = `<div class="car" data-id="${id}">
         <div class="wrapper wrapper-buttons">
           <button class="car__btn-select">select</button>
           <button class="car__btn-remove">remove</button>
-          <h3 class="car__model">${carObj.name}</h3>
+          <h3 class="car__model">${name}</h3>
         </div>
         <div class="wrapper wrapper-image">
           <button class="car__btn-start">A</button>
           <button class="car__btn-stop" disabled>B</button>
-          ${getCarSVG(carObj.color, 64, 25)}
+          ${getCarSVG(color, 64, 25, 'car__image')}
           <div class="car__flag">
           </div>
         </div>
@@ -38,8 +40,9 @@ const formGarage = `<form action="#" method="#">
 </div>
 </form>`;
 
-const getGarage = (data: IDataGarage): string => {
+const getGarage = (data: IData): string => {
   const { currentPage, totalCount, cars } = data;
+  if (!cars) throw new Error('cars is not exist');
   const garage = `
   ${formGarage}
   <h2>Garage(${totalCount})</h2>

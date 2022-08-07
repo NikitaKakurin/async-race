@@ -1,6 +1,7 @@
-import { ICar, IDataGarage } from '../typescript/type';
+import { ICar, IData } from '../typescript/type';
 import container from '../utils/container';
 import getGarage from '../utils/getGarage';
+import getWinners from '../utils/getWinners';
 
 const getElById = (id: string) => {
   const el = document.getElementById(id);
@@ -46,16 +47,17 @@ class AppView {
     this.winners.innerHTML = '';
   }
 
-  drawGarage(data: IDataGarage) {
+  drawGarage(data: IData) {
     this.clearGarageAndWinners();
     (this.garage as HTMLDivElement).insertAdjacentHTML('afterbegin', getGarage(data));
     this.getElementsGarage();
     this.disablePagination(data);
   }
 
-  drawWinners() {
+  drawWinners(data: IData) {
     this.clearGarageAndWinners();
-    (this.winners as HTMLDivElement).innerHTML = '';
+    (this.winners as HTMLDivElement).insertAdjacentHTML('afterbegin', getWinners(data));
+    console.log(data);
   }
 
   drawContainer() {
@@ -84,6 +86,8 @@ class AppView {
     if (!this.updateCarColor || !this.updateCarName || !this.updateCarBtn) {
       throw new Error('update inputs is not exist');
     }
+    if (typeof carObj.color !== 'string') throw new Error('color is not string');
+    if (typeof carObj.name !== 'string') throw new Error('name is not string');
     const { updateCarColor, updateCarName, updateCarBtn } = this;
     updateCarColor.disabled = false;
     updateCarName.disabled = false;
@@ -173,7 +177,7 @@ class AppView {
     (el as HTMLButtonElement).disabled = false;
   }
 
-  disablePagination(data: IDataGarage) {
+  disablePagination(data: IData) {
     if (!this.previousPage || !this.nextPage) {
       throw new Error('this.previousPage or this.nextPage is not exist');
     }
