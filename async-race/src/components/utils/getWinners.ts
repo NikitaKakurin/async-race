@@ -3,7 +3,6 @@ import getCarSVG from './getCarSvg';
 
 const getPageWinners = (winners: CarsType, page: number) => {
   const allWinners = winners.map((winnerObj, index) => {
-    console.log(winnerObj);
     // eslint-disable-next-line object-curly-newline
     const { color, name, time, wins } = winnerObj;
     const WinnersNumber = (page - 1) * 10 + index + 1;
@@ -24,7 +23,6 @@ const getPageWinners = (winners: CarsType, page: number) => {
 
 const getWinners = (data: IData) => {
   const { totalCount, currentPage, cars } = data;
-  console.log(data);
   if (!cars) throw new Error('cars is not exist');
   const winners = `
   <h2> Winners(${totalCount})</h2>

@@ -57,7 +57,12 @@ class App {
       }
 
       if (target.closest('#toWinnersBtn')) {
-        controller.getWinners(controller.pageWinners, (data) => view.drawWinners(data));
+        controller.getWinners(
+          controller.pageWinners,
+          (data) => view.drawWinners(data),
+          'id',
+          'ASC',
+        );
         return;
       }
 
@@ -133,6 +138,7 @@ class App {
             controller.getCar(id, (data) => {
               view.enableBtn('#reset');
               view.showModal(data, this.timeObj[data.id]);
+              controller.addWinner(id, time);
             });
           });
         });

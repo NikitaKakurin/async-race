@@ -1,4 +1,6 @@
-import { IData, CarsType, ICar, IDataWinners, IWinner, WinnersType } from '../typescript/type';
+import {
+ IData, CarsType, ICar, IDataWinners, IWinner, WinnersType 
+} from '../typescript/type';
 import { brands, models } from '../utils/carsNames';
 import getRandomHexColor from '../utils/getRandomHexColor';
 
@@ -11,7 +13,17 @@ interface IRaceParam {
   time: number;
   id: number;
 }
-
+interface IQuery {
+  page: number;
+  limit: number;
+  sort?: string;
+  order?: string;
+}
+interface IReqWinner {
+  time?: number;
+  id?: number;
+  wins?: number;
+}
 interface IResetParam {
   isOk: boolean;
   id: number;
@@ -50,12 +62,18 @@ class Controller {
     this.pageWinners = 1;
   }
 
-  async getUnits(page: number, cb: (data: IData) => void, pathUrl: string, limit: number) {
+  async getUnits(
+    page: number,
+    cb: (data: IData) => void,
+    pathUrl: string,
+    limit: number,
+    query: string,
+  ) {
     const currentPage = page;
-    const path = `${pathUrl}?_page=${page}&_limit=${limit}`;
+    const path = `${pathUrl}?${query}`;
     const response = await fetch(path);
     const cars: CarsType = await response.json();
-    const totalCountString = await response.headers.get('X-Total-Count');
+    const totalCountString = response.headers.get('X-Total-Count');
     if (totalCountString === null || Number.isNaN(+totalCountString)) {
       throw new Error('X-Total-Count is null or not number');
     }
@@ -64,7 +82,7 @@ class Controller {
     this.totalCount = totalCount;
     const totalPages = Math.ceil(totalCount / limit);
     if (page > totalPages) {
-      this.getUnits(totalPages, cb, pathUrl, limit);
+      this.getUnits(totalPages, cb, pathUrl, limit, query);
     }
     const result = {
       currentPage,
@@ -74,6 +92,11 @@ class Controller {
     if (pathUrl !== this.winnersUrl) {
       return cb(result);
     }
+    this.completeResultForWinners(result, cb);
+  }
+
+  completeResultForWinners(result: IData, cb: (data: IData) => void) {
+    if (!result.cars) throw new Error('result is not exist');
     const arr = result.cars.map(async (car) => {
       const pathCar = `${this.garageUrl}/${car.id}`;
       const responseCar = await fetch(pathCar);
@@ -84,6 +107,7 @@ class Controller {
       .then((carsArr) => {
         debugger;
         carsArr.forEach((car, index) => {
+          if (!result.cars) throw new Error('result is not exist');
           const res = result.cars[index];
           res.color = car.color;
           res.name = car.name;
@@ -92,54 +116,65 @@ class Controller {
       .then(() => cb(result));
   }
 
-  // async getWinnerParam(arr: CarsType) {
-  //   const promArr = arr.reduce(async (acc, car): CarsType => {
-  //     const pathCar = `${this.garageUrl}/${car.id}`;
-  //     const responseCar = await fetch(pathCar);
-  //     const res: ICar = await responseCar.json();
-  //     acc.push(res);
-  //     return acc;
-  //   }, []);
-  // }
-
   async getCars(page: number, cb: (data: IData) => void) {
     this.pageGarage = page;
-    this.getUnits(page, cb, this.garageUrl, this.garageLimit);
+    const query = `_page=${page}&_limit=${this.garageLimit}`;
+    this.getUnits(page, cb, this.garageUrl, this.garageLimit, query);
   }
 
-  async getWinners(page: number, cb: (data: IData) => void) {
+  async getWinners(page: number, cb: (data: IData) => void, sort: string, order: string) {
     this.pageWinners = page;
-    this.getUnits(page, cb, this.winnersUrl, this.winnersLimit);
+    const query = `_page=${page}&_limit=${this.winnersLimit}&_sort=${sort}&_order=${order}`;
+    this.getUnits(page, cb, this.winnersUrl, this.winnersLimit, query);
   }
-  // async getCars(page: number, cb: (data: IData) => void) {
-  //   this.pageGarage = page;
-  //   const currentPage = page;
-  //   const path = `${this.garageUrl}?_page=${page}&_limit=${this.limitGarage}`;
-  //   const response = await fetch(path);
-  //   const cars: CarsType = await response.json();
-  //   const totalCountString = await response.headers.get('X-Total-Count');
-  //   if (totalCountString === null || Number.isNaN(+totalCountString)) {
-  //     throw new Error('X-Total-Count is null or not number');
-  //   }
-
-  //   const totalCount = +totalCountString;
-  //   this.totalCount = totalCount;
-  //   const totalPages = Math.ceil(totalCount / 7);
-  //   if (this.pageGarage > totalPages) {
-  //     this.getCars(totalPages, cb);
-  //     return;
-  //   }
-
-  //   const result = {
-  //     currentPage,
-  //     totalCount,
-  //     cars,
-  //   };
-  //   cb(result);
-  // }
 
   async getWinner(id: number, cb: (car: UnitType) => void) {
     this.getUnit(this.winnersUrl, id, cb);
+  }
+
+  async addWinner(id: number, time: number) {
+    console.log('addWinner');
+    console.log(id);
+    console.log(time);
+
+    this.getWinner(id, async (previousData: ICar) => {
+      console.log(previousData);
+      const resWinner: IReqWinner = {};
+      debugger;
+      if (previousData.time === undefined || previousData.wins === undefined) {
+        resWinner.time = +(time / 1000).toFixed(2);
+        resWinner.wins = 1;
+      } else {
+        const ms = +(time / 1000).toFixed(2);
+        resWinner.time = ms < previousData.time ? ms : previousData.time;
+        resWinner.wins = previousData.wins + 1;
+        resWinner.id = id;
+        this.updateWinner(resWinner);
+        return;
+      }
+      resWinner.id = id;
+      console.log(resWinner);
+      const response = await fetch(this.winnersUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(resWinner),
+      });
+      const res = await response.json();
+    });
+  }
+
+  async updateWinner(param: IReqWinner) {
+    const { id, time, wins } = param;
+    const response = await fetch(`${this.winnersUrl}/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ time, wins }),
+    });
+    const res = await response.json();
   }
 
   async getCar(id: number, cb: (car: ICar) => void) {
@@ -157,13 +192,6 @@ class Controller {
     }
     cb(res as IWinner);
   }
-
-  // async getCar(id: number, cb: (car: ICar) => void) {
-  //   const path = `${this.garageUrl}/${id}`;
-  //   const response = await fetch(path);
-  //   const car: ICar = await response.json();
-  //   cb(car);
-  // }
 
   async removeCar(id: number, cb: (data: IData) => void) {
     const path = `${this.garageUrl}/${id}`;
@@ -192,8 +220,6 @@ class Controller {
   }
 
   generateCars(cb: (data: IData) => void) {
-    console.log('generate');
-
     const brandsLength = brands.length;
     const modelLength = brands.length;
     const createCarPromises = [];

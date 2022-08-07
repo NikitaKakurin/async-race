@@ -57,7 +57,6 @@ class AppView {
   drawWinners(data: IData) {
     this.clearGarageAndWinners();
     (this.winners as HTMLDivElement).insertAdjacentHTML('afterbegin', getWinners(data));
-    console.log(data);
   }
 
   drawContainer() {
@@ -110,7 +109,6 @@ class AppView {
     const carImage = getElBySelector('.car__image', car) as HTMLDivElement;
     const carWrapper = getElBySelector('.wrapper-image', car) as HTMLDivElement;
     const width = carWrapper.offsetWidth;
-    console.log(width);
     carImage.style.transitionDuration = `${time}ms`;
     carImage.style.left = `${width - 120}px`;
     this.changeDisableBtn(car, '.car__btn-start', '.car__btn-stop');
@@ -141,7 +139,7 @@ class AppView {
 
   showModal(data: ICar, time: number) {
     const { name, id } = data;
-    const fixedTime = Math.floor(time / 1000).toFixed(2);
+    const fixedTime = (time / 1000).toFixed(2);
     const modal = getElById('modal') as HTMLDivElement;
     const modalText = getElById('modal__text') as HTMLDivElement;
     const modalClose = getElById('modal__close') as HTMLDivElement;
@@ -152,7 +150,7 @@ class AppView {
       () => {
         modal.classList.remove('modal-show');
       },
-      { once: true },
+      { once: true }
     );
   }
 
