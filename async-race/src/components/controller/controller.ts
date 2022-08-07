@@ -1,6 +1,4 @@
-import {
- IData, CarsType, ICar, IDataWinners, IWinner, WinnersType 
-} from '../typescript/type';
+import { IData, CarsType, ICar, IDataWinners, IWinner, WinnersType } from '../typescript/type';
 import { brands, models } from '../utils/carsNames';
 import getRandomHexColor from '../utils/getRandomHexColor';
 
@@ -52,6 +50,12 @@ class Controller {
 
   winnersUrl: string;
 
+  timeOrder: 'ASC' | 'DESC';
+
+  winsOrder: 'ASC' | 'DESC';
+
+  sort: 'id' | 'time' | 'wins';
+
   constructor() {
     this.url = 'http://127.0.0.1:3000';
     this.garageUrl = `${this.url}/garage`;
@@ -60,6 +64,9 @@ class Controller {
     this.winnersLimit = 10;
     this.pageGarage = 1;
     this.pageWinners = 1;
+    this.timeOrder = 'ASC';
+    this.sort = 'id';
+    this.winsOrder = 'ASC';
   }
 
   async getUnits(
@@ -67,7 +74,7 @@ class Controller {
     cb: (data: IData) => void,
     pathUrl: string,
     limit: number,
-    query: string,
+    query: string
   ) {
     const currentPage = page;
     const path = `${pathUrl}?${query}`;
@@ -124,8 +131,22 @@ class Controller {
 
   async getWinners(page: number, cb: (data: IData) => void, sort: string, order: string) {
     this.pageWinners = page;
-    const query = `_page=${page}&_limit=${this.winnersLimit}&_sort=${sort}&_order=${order}`;
+    const query = `_page=${page}&_limit=${this.winnersLimit}&_sort=${this.sort}&_order=${order}`;
     this.getUnits(page, cb, this.winnersUrl, this.winnersLimit, query);
+  }
+
+  async getWinnersByTime(cb: (data: IData) => void) {
+    this.timeOrder = this.timeOrder === 'DESC' ? 'ASC' : 'DESC';
+    this.sort = 'time';
+    const query = `_page=${this.pageWinners}&_limit=${this.winnersLimit}&_sort=time&_order=${this.timeOrder}`;
+    this.getUnits(this.pageWinners, cb, this.winnersUrl, this.winnersLimit, query);
+  }
+
+  async getWinnersByWins(cb: (data: IData) => void) {
+    this.winsOrder = this.winsOrder === 'DESC' ? 'ASC' : 'DESC';
+    this.sort = 'wins';
+    const query = `_page=${this.pageWinners}&_limit=${this.winnersLimit}&_sort=wins&_order=${this.winsOrder}`;
+    this.getUnits(this.pageWinners, cb, this.winnersUrl, this.winnersLimit, query);
   }
 
   async getWinner(id: number, cb: (car: UnitType) => void) {
@@ -133,14 +154,8 @@ class Controller {
   }
 
   async addWinner(id: number, time: number) {
-    console.log('addWinner');
-    console.log(id);
-    console.log(time);
-
     this.getWinner(id, async (previousData: ICar) => {
-      console.log(previousData);
       const resWinner: IReqWinner = {};
-      debugger;
       if (previousData.time === undefined || previousData.wins === undefined) {
         resWinner.time = +(time / 1000).toFixed(2);
         resWinner.wins = 1;
@@ -153,7 +168,6 @@ class Controller {
         return;
       }
       resWinner.id = id;
-      console.log(resWinner);
       const response = await fetch(this.winnersUrl, {
         method: 'POST',
         headers: {

@@ -32,8 +32,8 @@ const getWinners = (data: IData) => {
       <div class="winners__td winners__number">№</div>
       <div class="winners__td winners__car">Car</div>
       <div class="winners__td winners__name">Name</div>
-      <div class="winners__td winners__wins">Wins</div>
-      <div class="winners__td winners__time">Best Time, s</div>
+      <div class="winners__td winners__wins" id="winners__wins">Wins</div>
+      <div class="winners__td winners__time" id="winners__time">Best Time, s</div>
     </div>
     <div class="winners__tbody">
       ${getPageWinners(cars, currentPage)}

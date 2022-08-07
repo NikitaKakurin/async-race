@@ -66,6 +66,16 @@ class App {
         return;
       }
 
+      if (target.closest('#winners__time')) {
+        controller.getWinnersByTime((data) => view.drawWinners(data));
+        return;
+      }
+
+      if (target.closest('#winners__wins')) {
+        controller.getWinnersByWins((data) => view.drawWinners(data));
+        return;
+      }
+
       if (target.closest('#create-car')) {
         const color = view.createCarColor?.value;
         const name = view.createCarName?.value;

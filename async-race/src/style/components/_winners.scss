@@ -39,9 +39,20 @@
 
   .winners__wins{
     width: 30px;
+    
   }
 
   .winners__time{
     width: 60px;
+  }
+
+  .winners__wins,
+  .winners__time{
+    cursor: pointer;
+    transition:background 0.4s;
+
+    &:hover{
+      background:darken(rgb(10, 21, 146), 25%);
+    }
   }
 }
