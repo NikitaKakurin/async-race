@@ -1,4 +1,6 @@
-import { IData, CarsType, ICar, IWinner } from '../typescript/type';
+import {
+ IData, CarsType, ICar, IWinner 
+} from '../typescript/type';
 import { brands, models } from '../utils/carsNames';
 import getRandomHexColor from '../utils/getRandomHexColor';
 
@@ -63,7 +65,7 @@ class Controller {
     cb: (data: IData) => void,
     pathUrl: string,
     limit: number,
-    query: string,
+    query: string
   ) {
     const currentPage = page;
     const path = `${pathUrl}?${query}`;
@@ -203,7 +205,16 @@ class Controller {
       method: 'DELETE',
     });
     await response.json();
-    this.getCars(this.pageGarage, cb);
+    await this.getCars(this.pageGarage, cb);
+    this.removeWinner(id);
+  }
+
+  async removeWinner(id: number) {
+    const path = `${this.winnersUrl}/${id}`;
+    const response = await fetch(path, {
+      method: 'DELETE',
+    });
+    await response.json();
   }
 
   async createCar(name: string, color: string, cb?: (data: IData) => void) {
