@@ -233,7 +233,7 @@ class Controller {
     return res;
   }
 
-  generateCars(cb: (data: IData) => void) {
+  async generateCars(cb: (data: IData) => void) {
     const brandsLength = brands.length;
     const modelLength = brands.length;
     const createCarPromises = [];
