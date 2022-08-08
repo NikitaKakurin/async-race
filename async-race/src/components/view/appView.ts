@@ -57,6 +57,7 @@ class AppView {
   drawWinners(data: IData) {
     this.clearGarageAndWinners();
     (this.winners as HTMLDivElement).insertAdjacentHTML('afterbegin', getWinners(data));
+    this.disablePagination(data);
   }
 
   drawContainer() {
@@ -179,16 +180,17 @@ class AppView {
     if (!this.previousPage || !this.nextPage) {
       throw new Error('this.previousPage or this.nextPage is not exist');
     }
+    const { currentPage, totalCount, limit } = data;
     const prev = this.previousPage as HTMLButtonElement;
     const next = this.nextPage as HTMLButtonElement;
-    if (data.currentPage === 1) {
+    if (currentPage === 1) {
       prev.disabled = true;
     } else {
       prev.disabled = false;
     }
 
-    const totalPages = Math.ceil(data.totalCount / 7);
-    if (totalPages === data.currentPage) {
+    const totalPages = Math.ceil(totalCount / limit);
+    if (totalPages === currentPage) {
       next.disabled = true;
     } else {
       next.disabled = false;

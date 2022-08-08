@@ -15,6 +15,7 @@ export type CarsType = ICar[];
 
 export type WinnersType = IWinner[];
 export interface IData {
+  limit: number;
   currentPage: number;
   totalCount: number;
   cars?: CarsType;

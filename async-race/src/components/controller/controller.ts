@@ -1,4 +1,4 @@
-import { IData, CarsType, ICar, IDataWinners, IWinner, WinnersType } from '../typescript/type';
+import { IData, CarsType, ICar, IWinner } from '../typescript/type';
 import { brands, models } from '../utils/carsNames';
 import getRandomHexColor from '../utils/getRandomHexColor';
 
@@ -11,25 +11,13 @@ interface IRaceParam {
   time: number;
   id: number;
 }
-interface IQuery {
-  page: number;
-  limit: number;
-  sort?: string;
-  order?: string;
-}
 interface IReqWinner {
   time?: number;
   id?: number;
   wins?: number;
 }
-interface IResetParam {
-  isOk: boolean;
-  id: number;
-}
 
 type UnitType = ICar | IWinner;
-type IDataUnits = IData | IDataWinners;
-type UnitsType = UnitType[];
 
 class Controller {
   readonly url: string;
@@ -44,7 +32,7 @@ class Controller {
 
   pageWinners: number;
 
-  totalCount?: number;
+  // totalCountGarage?: number;
 
   arrayRaceCars?: IRaceParam[];
 
@@ -55,6 +43,8 @@ class Controller {
   winsOrder: 'ASC' | 'DESC';
 
   sort: 'id' | 'time' | 'wins';
+
+  isRenderGarage: boolean;
 
   constructor() {
     this.url = 'http://127.0.0.1:3000';
@@ -67,6 +57,7 @@ class Controller {
     this.timeOrder = 'ASC';
     this.sort = 'id';
     this.winsOrder = 'ASC';
+    this.isRenderGarage = true;
   }
 
   async getUnits(
@@ -74,7 +65,7 @@ class Controller {
     cb: (data: IData) => void,
     pathUrl: string,
     limit: number,
-    query: string
+    query: string,
   ) {
     const currentPage = page;
     const path = `${pathUrl}?${query}`;
@@ -86,12 +77,15 @@ class Controller {
     }
 
     const totalCount = +totalCountString;
-    this.totalCount = totalCount;
     const totalPages = Math.ceil(totalCount / limit);
     if (page > totalPages) {
       this.getUnits(totalPages, cb, pathUrl, limit, query);
     }
+    if (page < 1) {
+      this.getUnits(1, cb, pathUrl, limit, query);
+    }
     const result = {
+      limit,
       currentPage,
       totalCount,
       cars,
@@ -124,22 +118,23 @@ class Controller {
   }
 
   async getCars(page: number, cb: (data: IData) => void) {
+    this.isRenderGarage = true;
     this.pageGarage = page;
     const query = `_page=${page}&_limit=${this.garageLimit}`;
     this.getUnits(page, cb, this.garageUrl, this.garageLimit, query);
   }
 
   async getWinners(page: number, cb: (data: IData) => void, sort: string, order: string) {
+    this.isRenderGarage = false;
     this.pageWinners = page;
-    const query = `_page=${page}&_limit=${this.winnersLimit}&_sort=${this.sort}&_order=${order}`;
+    const query = `_page=${page}&_limit=${this.winnersLimit}&_sort=${sort}&_order=${order}`;
     this.getUnits(page, cb, this.winnersUrl, this.winnersLimit, query);
   }
 
   async getWinnersByTime(cb: (data: IData) => void) {
     this.timeOrder = this.timeOrder === 'DESC' ? 'ASC' : 'DESC';
     this.sort = 'time';
-    const query = `_page=${this.pageWinners}&_limit=${this.winnersLimit}&_sort=time&_order=${this.timeOrder}`;
-    this.getUnits(this.pageWinners, cb, this.winnersUrl, this.winnersLimit, query);
+    this.getWinners(this.pageWinners, cb, this.sort, this.timeOrder);
   }
 
   async getWinnersByWins(cb: (data: IData) => void) {
@@ -284,8 +279,10 @@ class Controller {
   }
 
   async stopCar(id: number, cb: () => void) {
-    const res = (await this.sendStatusCar(id, 'stopped')).ok;
-    cb();
+    const isOk = (await this.sendStatusCar(id, 'stopped')).ok;
+    if (isOk) {
+      cb();
+    }
   }
 
   async startRace(cb: (param: IRaceParam) => void) {
@@ -313,22 +310,40 @@ class Controller {
     this.arrayRaceCars?.forEach(async (data) => {
       const { id } = data;
       const isOk = (await this.sendStatusCar(id, 'stopped')).ok;
-      cb(id);
+      if (isOk) {
+        cb(id);
+      }
     });
   }
 
+  getOrder() {
+    return this.sort === 'time' ? this.timeOrder : this.winsOrder;
+  }
+
   nextPage(cb: (data: IData) => void) {
-    if (!this.totalCount) throw new Error('this.totalCount is not exist');
-    if (this.pageGarage + 1 > this.totalCount) return;
-    this.pageGarage += 1;
-    this.getCars(this.pageGarage, cb);
+    // if (!this.totalCountGarage) throw new Error('this.totalCount is not exist');
+    // if (this.pageGarage + 1 > Math.ceil(this.totalCountGarage / this.garageLimit)) return;
+    // this.pageGarage += 1;
+    // this.getCars(this.pageGarage, cb);
+    if (this.isRenderGarage) {
+      this.getCars(this.pageGarage + 1, cb);
+      return;
+    }
+    const order = this.getOrder();
+    this.getWinners(this.pageWinners + 1, cb, this.sort, order);
   }
 
   prevPage(cb: (data: IData) => void) {
-    if (!this.totalCount) throw new Error('this.totalCount is not exist');
-    if (this.pageGarage === 1) return;
-    this.pageGarage -= 1;
-    this.getCars(this.pageGarage, cb);
+    // if (!this.totalCountGarage) throw new Error('this.totalCount is not exist');
+    // if (this.pageGarage === 1) return;
+    // this.pageGarage -= 1;
+    // this.getCars(this.pageGarage, cb);
+    if (this.isRenderGarage) {
+      this.getCars(this.pageGarage - 1, cb);
+      return;
+    }
+    const order = this.getOrder();
+    this.getWinners(this.pageWinners - 1, cb, this.sort, order);
   }
 }
 

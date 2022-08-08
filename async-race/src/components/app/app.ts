@@ -45,34 +45,31 @@ class App {
   start(): void {
     const { controller, view } = this;
     view.drawContainer();
-    controller.getCars(1, (data) => view.drawGarage(data));
+    const drawGarage = (data: IData) => view.drawGarage(data);
+    const drawWinners = (data: IData) => view.drawWinners(data);
+    controller.getCars(1, drawGarage);
 
     const handleClick = (e: Event) => {
       if (e.target === null) throw new Error('target is null');
       const target = e.target as HTMLElement;
 
       if (target.closest('#toGarageBtn')) {
-        controller.getCars(controller.pageGarage, (data) => view.drawGarage(data));
+        controller.getCars(controller.pageGarage, drawGarage);
         return;
       }
 
       if (target.closest('#toWinnersBtn')) {
-        controller.getWinners(
-          controller.pageWinners,
-          (data) => view.drawWinners(data),
-          'id',
-          'ASC',
-        );
+        controller.getWinners(controller.pageWinners, drawWinners, 'id', 'ASC');
         return;
       }
 
       if (target.closest('#winners__time')) {
-        controller.getWinnersByTime((data) => view.drawWinners(data));
+        controller.getWinnersByTime(drawWinners);
         return;
       }
 
       if (target.closest('#winners__wins')) {
-        controller.getWinnersByWins((data) => view.drawWinners(data));
+        controller.getWinnersByWins(drawWinners);
         return;
       }
 
@@ -82,7 +79,7 @@ class App {
         if (name === undefined || color === undefined) {
           throw new Error('name or color is undefined');
         }
-        controller.createCar(name, color, (data) => view.drawGarage(data));
+        controller.createCar(name, color, drawGarage);
         return;
       }
 
@@ -93,7 +90,7 @@ class App {
           throw new Error('name or color or id is undefined');
         }
         const { id } = this;
-        controller.updateCar(id, name, color, (data) => view.drawGarage(data));
+        controller.updateCar(id, name, color, drawGarage);
         view.disableUpdateInputs();
         return;
       }
@@ -110,7 +107,7 @@ class App {
       if (target.closest('.car__btn-remove')) {
         const { numberId } = getCarElAndID(target);
         this.id = numberId;
-        controller.removeCar(numberId, (data) => view.drawGarage(data));
+        controller.removeCar(numberId, drawGarage);
         return;
       }
 
@@ -174,17 +171,25 @@ class App {
       }
 
       if (target.closest('#generate-cars')) {
-        controller.generateCars((data) => view.drawGarage(data));
+        controller.generateCars(drawGarage);
         return;
       }
 
       if (target.closest('#pagination__next')) {
-        controller.nextPage((data) => view.drawGarage(data));
+        if (controller.isRenderGarage) {
+          controller.nextPage(drawGarage);
+          return;
+        }
+        controller.nextPage(drawWinners);
         return;
       }
 
       if (target.closest('#pagination__previous')) {
-        controller.prevPage((data) => view.drawGarage(data));
+        if (controller.isRenderGarage) {
+          controller.prevPage(drawGarage);
+          return;
+        }
+        controller.prevPage(drawWinners);
       }
     };
     document.addEventListener('click', handleClick);
