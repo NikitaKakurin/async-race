@@ -32,8 +32,6 @@ class Controller {
 
   pageWinners: number;
 
-  // totalCountGarage?: number;
-
   arrayRaceCars?: IRaceParam[];
 
   winnersUrl: string;
@@ -81,9 +79,7 @@ class Controller {
     if (page > totalPages) {
       this.getUnits(totalPages, cb, pathUrl, limit, query);
     }
-    if (page < 1) {
-      this.getUnits(1, cb, pathUrl, limit, query);
-    }
+
     const result = {
       limit,
       currentPage,
@@ -119,15 +115,15 @@ class Controller {
 
   async getCars(page: number, cb: (data: IData) => void) {
     this.isRenderGarage = true;
-    this.pageGarage = page;
+    this.pageGarage = page < 1 ? 1 : page;
     const query = `_page=${page}&_limit=${this.garageLimit}`;
-    this.getUnits(page, cb, this.garageUrl, this.garageLimit, query);
+    this.getUnits(this.pageGarage, cb, this.garageUrl, this.garageLimit, query);
   }
 
   async getWinners(page: number, cb: (data: IData) => void, sort: string, order: string) {
     this.isRenderGarage = false;
-    this.pageWinners = page;
-    const query = `_page=${page}&_limit=${this.winnersLimit}&_sort=${sort}&_order=${order}`;
+    this.pageWinners = page < 1 ? 1 : page;
+    const query = `_page=${this.pageWinners}&_limit=${this.winnersLimit}&_sort=${sort}&_order=${order}`;
     this.getUnits(page, cb, this.winnersUrl, this.winnersLimit, query);
   }
 
@@ -140,8 +136,7 @@ class Controller {
   async getWinnersByWins(cb: (data: IData) => void) {
     this.winsOrder = this.winsOrder === 'DESC' ? 'ASC' : 'DESC';
     this.sort = 'wins';
-    const query = `_page=${this.pageWinners}&_limit=${this.winnersLimit}&_sort=wins&_order=${this.winsOrder}`;
-    this.getUnits(this.pageWinners, cb, this.winnersUrl, this.winnersLimit, query);
+    this.getWinners(this.pageWinners, cb, this.sort, this.winsOrder);
   }
 
   async getWinner(id: number, cb: (car: UnitType) => void) {
@@ -321,10 +316,6 @@ class Controller {
   }
 
   nextPage(cb: (data: IData) => void) {
-    // if (!this.totalCountGarage) throw new Error('this.totalCount is not exist');
-    // if (this.pageGarage + 1 > Math.ceil(this.totalCountGarage / this.garageLimit)) return;
-    // this.pageGarage += 1;
-    // this.getCars(this.pageGarage, cb);
     if (this.isRenderGarage) {
       this.getCars(this.pageGarage + 1, cb);
       return;
@@ -334,10 +325,6 @@ class Controller {
   }
 
   prevPage(cb: (data: IData) => void) {
-    // if (!this.totalCountGarage) throw new Error('this.totalCount is not exist');
-    // if (this.pageGarage === 1) return;
-    // this.pageGarage -= 1;
-    // this.getCars(this.pageGarage, cb);
     if (this.isRenderGarage) {
       this.getCars(this.pageGarage - 1, cb);
       return;
