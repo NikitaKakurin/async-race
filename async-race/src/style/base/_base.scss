@@ -6,3 +6,11 @@ html{
   font-size: 16px;
   color: rgb(255, 174, 0);
 }
+
+button, input{
+  cursor: pointer;
+
+  &:disabled{
+    cursor: auto;
+  }
+}
