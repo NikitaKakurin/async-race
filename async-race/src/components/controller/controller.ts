@@ -102,7 +102,6 @@ class Controller {
     });
     Promise.all(arr)
       .then((carsArr) => {
-        debugger;
         carsArr.forEach((car, index) => {
           if (!result.cars) throw new Error('result is not exist');
           const res = result.cars[index];
