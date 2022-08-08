@@ -1,6 +1,4 @@
-import {
- IData, CarsType, ICar, IWinner 
-} from '../typescript/type';
+import { IData, CarsType, ICar, IWinner } from '../typescript/type';
 import { brands, models } from '../utils/carsNames';
 import getRandomHexColor from '../utils/getRandomHexColor';
 
@@ -65,7 +63,7 @@ class Controller {
     cb: (data: IData) => void,
     pathUrl: string,
     limit: number,
-    query: string
+    query: string,
   ) {
     const currentPage = page;
     const path = `${pathUrl}?${query}`;
@@ -167,7 +165,7 @@ class Controller {
         },
         body: JSON.stringify(resWinner),
       });
-      const res = await response.json();
+      await response.json();
     });
   }
 
@@ -180,7 +178,7 @@ class Controller {
       },
       body: JSON.stringify({ time, wins }),
     });
-    const res = await response.json();
+    await response.json();
   }
 
   async getCar(id: number, cb: (car: ICar) => void) {
